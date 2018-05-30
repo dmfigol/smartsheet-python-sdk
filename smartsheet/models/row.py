@@ -67,6 +67,10 @@ class Row(object):
         self._to_bottom = Boolean()
         self._to_top = Boolean()
         self._version = Number()
+        self.sheet = None
+        self.column_id_to_cell = {}
+        self.column_title_to_cell = {}
+        self.extra = {}
 
         if props:
             deserialize(self, props)
@@ -316,6 +320,35 @@ class Row(object):
     def version(self, value):
         self._version.value = value
 
+    def build_index(self, sheet):
+        sheet.row_id_to_row[self.id] = self
+        self.sheet = sheet
+        for cell in self.cells:
+            column_id = cell.column_id
+            column_title = sheet.column_id_to_title[column_id]
+            self.column_id_to_cell[column_id] = cell
+            if column_title not in self.column_title_to_cell:
+                self.column_title_to_cell[column_title] = cell
+
+    def get_cell(self, column_title=None, column_id=None):
+        if column_title is not None:
+            return self.column_title_to_cell[column_title]
+        elif column_id is not None:
+            return self.column_id_to_cell[column_id]
+        else:
+            raise ValueError("Either column_title or column_id must be specified")
+
+    def get_cell_value(self, column_title=None, column_id=None, display=False):
+        cell = self.get_cell(column_title, column_id)
+        if display:
+            return cell.display_value
+        else:
+            return cell.value
+
+    def get_cell_id(self, column_title=None, column_id=None):
+        cell = self.get_cell(column_title, column_id)
+        return cell.column_id
+
     def get_column(self, column_id):
         for cell in self.cells:
             if cell.column_id == column_id:
@@ -331,6 +364,7 @@ class Row(object):
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
 
     def __str__(self):
         return self.to_json()

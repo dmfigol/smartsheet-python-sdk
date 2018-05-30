@@ -16,6 +16,7 @@
 # under the License.
 
 from __future__ import absolute_import
+import warnings
 
 from .attachment import Attachment
 from .column import Column
@@ -78,6 +79,11 @@ class Sheet(object):
         # requests package Response object
         self.request_response = None
         self.__initialized = True
+
+        self.column_id_to_title = self._build_column_id_to_title_mapping()
+        self.row_id_to_row = {}
+        self._build_rows_index()
+        self.extra = {}
 
     def __getattr__(self, key):
         if key == 'id':
@@ -307,6 +313,23 @@ class Sheet(object):
     def version(self, value):
         self._version.value = value
 
+    def _build_column_id_to_title_mapping(self):
+        result = {}
+        column_titles = set()
+        for column in self.columns:
+            column_title = column.title
+            if column_title in column_titles:
+                warnings.warn("Duplicate column title {}".format(column_title))
+
+            column_titles.add(column_title)
+            result[column.id] = column_title
+
+        return result
+
+    def _build_rows_index(self):
+        for row in self.rows:
+            row.build_index(self)
+
     def add_columns(self, list_of_columns):
         return self._base.Sheets.add_columns(self.id, list_of_columns)
 
@@ -326,7 +349,10 @@ class Sheet(object):
         return self._base.Sheets.get_columns(self.id, include, page_size, page, include_all)
 
     def get_row(self, row_id, include=None, exclude=None):
-        return self._base.Sheets.get_row(self.id, row_id, include, exclude)
+        if row_id in self.row_id_to_row:
+            return self.row_id_to_row[row_id]
+        else:
+            return self._base.Sheets.get_row(self.id, row_id, include, exclude)
 
     def get_version(self):
         return self._base.Sheets.get_sheet_version(self.id)
