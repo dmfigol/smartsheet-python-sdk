@@ -35,6 +35,7 @@ class PyTest(TestCommand):
 
 setup(
     name=NAME,
+    version="10.1.3.3",
     description='Library that uses Python to connect to Smartsheet services (using API 2.0).',
     author='Smartsheet',
     author_email='api@smartsheet.com',
@@ -57,9 +58,6 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Office/Business :: Financial :: Spreadsheet',
     ],
-    use_scm_version={
-        'write_to': 'smartsheet/version.py'
-    },
     setup_requires=['setuptools_scm'],
     install_requires=REQUIRES,
     packages=find_packages(),
