@@ -24,7 +24,7 @@ try:
     from .version import version
     __version__ = version
 except ImportError:
-    pass
+    __version__ = "10.1.3.3"
     # from setuptools_scm import get_version
     # __version__ = get_version()
 
