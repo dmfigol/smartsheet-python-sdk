@@ -24,7 +24,8 @@ try:
     from .version import version
     __version__ = version
 except ImportError:
-    from setuptools_scm import get_version
-    __version__ = get_version()
+    pass
+    # from setuptools_scm import get_version
+    # __version__ = get_version()
 
 from .smartsheet import Smartsheet, fresh_operation, AbstractUserCalcBackoff  # NOQA
