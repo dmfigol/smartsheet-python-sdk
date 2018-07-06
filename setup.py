@@ -10,7 +10,7 @@ REQUIRES = [
     'six >= 1.9',
     'certifi',
     'python-dateutil',
-    'enum34'
+    'enum-compat'
 ]
 # test packages:
 # https://github.com/coagulant/coveralls-python
